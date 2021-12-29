@@ -47,7 +47,7 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: githubactions
-        tag: ${{ steps.tags.version_tag }}
+        tag: ${{ steps.tags.outputs.version_tag }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$tag .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$tag
