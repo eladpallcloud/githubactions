@@ -31,11 +31,23 @@ jobs:
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
-
+    
+    - name: Create a new semantic versionin tag
+      uses: paulhatch/semantic-version@v4.0.2
+      id: tags
+      with:
+        tag_prefix: "v"
+        major_pattern: "(MAJOR)"
+        minor_pattern: "(MINOR)"
+        format: "${major}.${minor}.${patch}-prerelease${increment}"
+        short_tags: true
+        bump_each_commit: true
+    
     - name: Build, tag, and push image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: githubactions
+        tag: ${{ steps.tags.version }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_RUN_ID .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_RUN_ID
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$tag .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$tag
